@@ -1,13 +1,13 @@
 pipeline {
     agent any
     tools {
-        maven 'maven3'
+        maven 'maven_binary'
     }
     stages{
         
         stage('checkout'){
             steps{
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/vcjain/jenkins-sonar-demo.git']])
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/manoj64314/jenkins-sonar-demo.git']])
             }    
         }
         stage('Build'){

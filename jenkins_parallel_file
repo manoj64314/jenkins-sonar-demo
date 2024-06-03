@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven_binary'
+    }
+    stages{
+        
+        stage('checkout'){
+            steps{
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/manoj64314/jenkins-sonar-demo.git']])
+            }    
+        }
+        stage('Build'){
+            steps{
+                echo 'Building Maven project'
+                sh 'mvn clean compile'
+            }
+        }
+       stage('Integration Testing'){
+            parallel{
+
+        stage('Test'){
+            steps{
+                echo 'Building Maven project'
+                sh 'mvn test'
+                junit '**/target/surefire-reports/*.xml'
+                jacoco classPattern: '**/target/classes', exclusionPattern: '**/*Test*.class', execPattern: '**/target/jacoco.exec', inclusionPattern: '**/*.class', sourceExclusionPattern: 'generated/**/*.java', sourceInclusionPattern: '**/*.java'
+            }
+        }
+        stage('SonarQube Analysis'){
+            steps{
+                echo 'Scanning Maven project'
+                withCredentials([string(credentialsId: 'sonar-id', variable: 'SONAR_TOKEN')]) {
+                    withSonarQubeEnv(installationName: 'sonarcloud', credentialsId: 'sonar-id') { 
+                        sh 'mvn sonar:sonar -Dsonar.projectKey=laxmi123 -Dsonar.organization=laxmi123 -Dsonar.host.url=https://sonarcloud.io'
+                        sh 'sleep 50'
+                        
+                    }
+                }    
+            }
+        }
+    }
+
+  }
+}
+
+}

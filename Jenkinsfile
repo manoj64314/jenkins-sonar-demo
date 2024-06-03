@@ -27,7 +27,7 @@ pipeline {
         stage('SonarQube Analysis'){
             steps{
                 echo 'Scanning Maven project'
-                withCredentials([string(credentialsId: 'sonar-id', variable: 'SONAR_TOKEN')]) {
+                withCredentials([string(credentialsId: 'sonar-id', variable: 'sonarqube')]) {
                     withSonarQubeEnv(installationName: 'sonarcloud', credentialsId: 'sonar-id') { 
                         sh 'mvn sonar:sonar -Dsonar.projectKey=sonardemo -Dsonar.organization=vcjain -Dsonar.host.url=https://sonarcloud.io'
                         sh 'sleep 50'
